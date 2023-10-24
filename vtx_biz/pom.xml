@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.yzh</groupId>
+		<artifactId>vtx_fw</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>vtx_biz</artifactId>
+	<name>vtx_biz</name>
+	<description>vtx_fw业务模块</description>
+
+	<properties>
+		<main.class>io.kida.yuen.AppBoot</main.class>
+		<!-- junit-jupiter -->
+		<junit-jupiter.version>5.10.0</junit-jupiter.version>
+
+		<!-- docker参数 -->
+		<docker-maven.version>0.43.4</docker-maven.version>
+
+		<!-- docker仓库 -->
+		<docker-host.name>tcp://192.168.100.152:2375</docker-host.name>
+		<docker.username>yzh</docker.username>
+		<docker.password>yuanzh0623</docker.password>
+		<target-ip.repo>192.168.100.152:5000</target-ip.repo>
+		<docker.image.registry>vtx</docker.image.registry>
+	</properties>
+
+	<dependencies>
+
+		<!-- vert.x -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-zookeeper</artifactId>
+		</dependency>
+
+		<!-- junit5 -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-junit5</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>${junit-jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>${junit-jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- vtx components -->
+		<dependency>
+			<groupId>io.yzh</groupId>
+			<artifactId>vtx_slimopt</artifactId>
+			<version>${vtx_slimopt.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.yzh</groupId>
+			<artifactId>vtx_util</artifactId>
+			<version>${vtx_util.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- maven shade plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven.shade.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<!-- filter file -->
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<manifestEntries>
+										<Main-Class>${main.class}</Main-Class>
+									</manifestEntries>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>
+										META-INF/services/io.vertx.core.spi.VerticleFactory </resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- docker打包插件,使用前先做好以下几点： -->
+			<!-- 1. 本地机器请先访问192.168.100.152私库下载好“adoptopenjdk:11-openj9”镜像 -->
+			<!-- 2. 注意properties标签中docker相关变量的修改）-->
+			<!-- 3. push到私库时请先确认私库服务器上是否已经开启2375端口，若没有开启请先执行以下镜像确保2375端口开启： -->
+			<!-- docker run -it -d -name=socat -p 2375:2375 -v
+			/var/run/docker.sock:/var/run/docker.sock -restart=always
+			bobrik/socat:latest TCP4-LISTEN:2375,fork,reuseaddr
+			UNIX-CONNECT:/var/run/docker.sock -->
+			<!-- 这里会用到一个名叫bobrik/socat的镜像这个镜像就是用于对付这种情况的 -->
+			<!-- 4. jar包采用集群模式 -->
+			<!-- 5. 镜像打包后会自动替换掉之前同名的镜像，因此不必考虑多个镜像同时存在的问题 -->
+			<!--<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>${docker-maven.version}</version>
+				<configuration>
+					<dockerHost>${docker-host.name}</dockerHost>
+					<authConfig>
+						<push>
+							<username>${docker.username}</username>
+							<password>${docker.password}</password>
+						</push>
+					</authConfig>
+					<images>
+						<image>
+							<name>
+								${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</name>
+							<build>
+								<from>ibm-semeru-runtimes:open-17.0.8_7-jre</from>
+								<maintainer>yzh0623@outlook.com</maintainer>
+								<ports>
+									<port>8197</port>
+								</ports>
+								<volumes>
+									<volume>/tmp</volume>
+								</volumes>
+								<workdir>/usr/local/share</workdir>
+								<entryPoint>
+									<exec>
+										<arg>java</arg>
+										<arg>-jar</arg>
+										<arg>
+											${project.artifactId}-${project.version}.jar</arg>
+										<arg>-XX:MaxGCPauseMillis=200</arg>
+										<arg>
+											-Xloggc:/tmp/${project.artifactId}/gc.log</arg>
+										<arg>-XX:+PrintGCDetails</arg>
+										<arg>-XX:+PrintGCDateStamps</arg>
+										<arg>-XX:+UnlockExperimentalVMOptions</arg>
+										<arg>-XX:+UseG1GC</arg>
+										<arg>
+											-Djava.security.egd=file:/dev/./urandom</arg>
+										<arg>-XX:+UseCGroupMemoryLimitForHeap</arg>
+										<arg>-XX:MaxRAMFraction=1</arg>
+										<arg>-XX:+HeapDumpOnOutOfMemoryError</arg>
+										<arg>
+											-XX:HeapDumpPath=/tmp/${project.artifactId}/dump/</arg>
+										<arg>-cluster</arg>
+									</exec>
+								</entryPoint>
+								<assembly>
+									<mode>dir</mode>
+									<targetDir>/usr/local/share</targetDir>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+							</build>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<id>push-image</id>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+						<configuration>
+							<imageName>
+								${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</imageName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> -->
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,38 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.yzh</groupId>
+		<artifactId>vtx_fw</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>vtx_extra</artifactId>
+	<packaging>pom</packaging>
+	<name>vtx_extra</name>
+	<description>vtx_fw扩展插件</description>
+
+	<properties>
+		<!-- hikaricp -->
+		<hikari.version>5.0.0</hikari.version>
+		<!-- mysql -->
+		<mysql.version>8.0.20</mysql.version>
+		 <!-- postgresql -->
+		<postgresql.version>42.3.2</postgresql.version>
+	</properties>
+	
+	<dependencies>
+		<!-- 工具组件 -->
+		<dependency>
+			<groupId>io.yzh</groupId>
+			<artifactId>vtx_util</artifactId>
+			<version>${vtx_util.version}</version>
+		</dependency>
+	</dependencies>
+	
+	<!-- 扩展模块 -->
+	<modules>
+		<!-- 简易操作（crud） -->
+		<module>vtx_slimopt</module>
+		<!-- 加密算法 -->
+		<module>vtx_cryption</module>
+	</modules>
+</project>

@@ -1,0 +1,41 @@
+databases:
+   has-open: true # 是否开启数据库
+   db-type: mysql # 数据库类型(mysql|postgresql)
+   nodes:
+      -
+         name: vtx_biz_write # 数据源名称
+         driver-class-name: com.mysql.cj.jdbc.Driver
+         uri: jdbc:mysql://127.0.0.1:3506/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
+         username: <username>
+         password: <password> 
+      -
+         name: vtx_biz_read # 数据源名称
+         driver-class-name: com.mysql.cj.jdbc.Driver # jdbc驱动类型
+         uri: jdbc:mysql://127.0.0.1:3806/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8 # 数据库连接字符串
+         username: <username>
+         password: <password>
+#       -
+#         name: vtx_biz_pgsql # 数据源名称（postgresql）
+#         driver-class-name: org.postgresql.Driver
+#         uri: jdbc:postgresql://127.0.0.1:5432/vtx_biz?characterEncoding=utf-8
+#         username: <username>
+#         password: <password>
+   hikari: 
+      is-auto-commit: true
+      allow-pool-suspension: true
+      connection-test-query: SELECT 1
+      pool-name: vtx-hikari-pool
+      minimum-idle: 100
+      maximum-pool-size: 500
+      idle-timeout: 18000
+      connection-timeout: 30000
+      cache-prep-stmts: true
+      prep-stmt-cache-size: 512
+      prep-stmt-cache-sql-limit: 1024
+      leak-detection-threshold: 5000
+   retry:
+      get-counter: 10 # 尝试获取数据源次数
+      interval: 500 # 重试间隔时间（毫秒）
+slimopt:   
+   scan:
+      path: io.kida.yuen.example.model

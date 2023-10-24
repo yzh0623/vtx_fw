@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.yzh</groupId>
+		<artifactId>vtx_fw</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>vtx_util</artifactId>
+	<name>vtx_util</name>
+	<description>vtx_fw工具包</description>
+
+	<properties>
+		<bcprov.version>1.71</bcprov.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- vertx config -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-config-yaml</artifactId>
+		</dependency>
+
+		<!-- vertx redis -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-redis-client</artifactId>
+		</dependency>
+
+		<!-- 国密sm2算法基础-->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk18on</artifactId>
+			<version>${bcprov.version}</version>
+		</dependency>
+	</dependencies>
+</project>

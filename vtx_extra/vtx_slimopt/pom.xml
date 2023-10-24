@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.yzh</groupId>
+		<artifactId>vtx_extra</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>vtx_slimopt</artifactId>
+	<name>vtx_slimopt</name>
+	<description>简易数据库操作（包括多数据源配置）</description>
+
+	<dependencies>
+		
+		<!-- jdbc客户端 -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-jdbc-client</artifactId>
+		</dependency>
+		
+		<!-- hikaricp数据库连接池-->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>${hikari.version}</version>
+		</dependency>
+		
+		<!-- mysql数据库连接器-->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+		
+		<!-- postgresql数据库连接器 -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
+		</dependency>
+	</dependencies>
+</project>
