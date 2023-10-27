@@ -20,10 +20,10 @@
 		<docker-maven.version>0.43.4</docker-maven.version>
 
 		<!-- docker仓库 -->
-		<docker-host.name>tcp://192.168.100.152:2375</docker-host.name>
-		<docker.username>yzh</docker.username>
-		<docker.password>yuanzh0623</docker.password>
-		<target-ip.repo>192.168.100.152:5000</target-ip.repo>
+		<docker-host.name>tcp://127.0.0.1:2375</docker-host.name>
+		<docker.username>admin</docker.username>
+		<docker.password>123456</docker.password>
+		<target-ip.repo>127.0.0.1:5002</target-ip.repo>
 		<docker.image.registry>vtx</docker.image.registry>
 	</properties>
 
@@ -111,17 +111,14 @@
 			</plugin>
 
 			<!-- docker打包插件,使用前先做好以下几点： -->
-			<!-- 1. 本地机器请先访问192.168.100.152私库下载好“adoptopenjdk:11-openj9”镜像 -->
+			<!-- 1. 本地机器请先访问本机私库下载好“ibm-semeru-runtimes:open-17.0.8_7-jre”镜像 -->
 			<!-- 2. 注意properties标签中docker相关变量的修改）-->
 			<!-- 3. push到私库时请先确认私库服务器上是否已经开启2375端口，若没有开启请先执行以下镜像确保2375端口开启： -->
-			<!-- docker run -it -d -name=socat -p 2375:2375 -v
-			/var/run/docker.sock:/var/run/docker.sock -restart=always
-			bobrik/socat:latest TCP4-LISTEN:2375,fork,reuseaddr
-			UNIX-CONNECT:/var/run/docker.sock -->
+			<!-- docker run -it -d -name=socat -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock -restart=always bobrik/socat:latest TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock -->
 			<!-- 这里会用到一个名叫bobrik/socat的镜像这个镜像就是用于对付这种情况的 -->
 			<!-- 4. jar包采用集群模式 -->
 			<!-- 5. 镜像打包后会自动替换掉之前同名的镜像，因此不必考虑多个镜像同时存在的问题 -->
-			<!--<plugin>
+			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>${docker-maven.version}</version>
@@ -135,8 +132,7 @@
 					</authConfig>
 					<images>
 						<image>
-							<name>
-								${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</name>
+							<name>${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</name>
 							<build>
 								<from>ibm-semeru-runtimes:open-17.0.8_7-jre</from>
 								<maintainer>yzh0623@outlook.com</maintainer>
@@ -151,22 +147,18 @@
 									<exec>
 										<arg>java</arg>
 										<arg>-jar</arg>
-										<arg>
-											${project.artifactId}-${project.version}.jar</arg>
+										<arg>${project.artifactId}-${project.version}.jar</arg>
 										<arg>-XX:MaxGCPauseMillis=200</arg>
-										<arg>
-											-Xloggc:/tmp/${project.artifactId}/gc.log</arg>
+										<arg>-Xloggc:/tmp/${project.artifactId}/gc.log</arg>
 										<arg>-XX:+PrintGCDetails</arg>
 										<arg>-XX:+PrintGCDateStamps</arg>
 										<arg>-XX:+UnlockExperimentalVMOptions</arg>
 										<arg>-XX:+UseG1GC</arg>
-										<arg>
-											-Djava.security.egd=file:/dev/./urandom</arg>
+										<arg>-Djava.security.egd=file:/dev/./urandom</arg>
 										<arg>-XX:+UseCGroupMemoryLimitForHeap</arg>
 										<arg>-XX:MaxRAMFraction=1</arg>
 										<arg>-XX:+HeapDumpOnOutOfMemoryError</arg>
-										<arg>
-											-XX:HeapDumpPath=/tmp/${project.artifactId}/dump/</arg>
+										<arg>-XX:HeapDumpPath=/tmp/${project.artifactId}/dump/</arg>
 										<arg>-cluster</arg>
 									</exec>
 								</entryPoint>
@@ -188,12 +180,11 @@
 							<goal>push</goal>
 						</goals>
 						<configuration>
-							<imageName>
-								${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</imageName>
+							<imageName>${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</imageName>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</build>
 </project>

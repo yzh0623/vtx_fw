@@ -9,27 +9,6 @@
 	<name>vtx_fw</name>
 	<description>Business framework based on vertx</description>
 
-	<repositories>
-		<repository>
-			<id>nexus</id>
-			<name>Team Nexus Repository</name>
-			<url>http://183.6.187.59:8081/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>nexus</id>
-			<name>Team Nexus Repository</name>
-			<url>http://183.6.187.59:8081/nexus/content/groups/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<distributionManagement>
-		<repository>
-			<id>thirdparty</id>
-			<url>http://183.6.187.59:8081/nexus/content/repositories/thirdparty/</url>
-		</repository>
-	</distributionManagement>
-
 	<properties>
 		<!-- environment configuration -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

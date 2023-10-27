@@ -2,6 +2,8 @@ package io.kida.yuen.router;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -26,6 +28,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -39,6 +42,7 @@ import io.vertx.ext.web.RoutingContext;
  * @Author: yuanzhenhui
  * @Date: 2023/10/16
  */
+@Slf4j
 public class SelectRouter extends AbstractVerticle implements RouterSet {
 
     /**
@@ -93,6 +97,11 @@ public class SelectRouter extends AbstractVerticle implements RouterSet {
                 JsonObject jsonObj = new JsonObject();
                 jsonObj.put(fieldOptional.get().getName(), pk);
                 jsonObj.put(DaoConstants.CLAZZ_PATH, clazz.getSimpleName());
+                try {
+                    log.info("router ip is : " + Inet4Address.getLocalHost());
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
                 evbVtx.eventBus().request(EVENTBUS_GET_QUERY_WITH_PK, jsonObj, RouterConstants.DELIVERY_OPTIONS,
                     reMsg -> hsr.end(reMsg.result().body().toString()));
             } else {
