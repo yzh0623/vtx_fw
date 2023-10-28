@@ -90,16 +90,16 @@ public class Sm2Util {
      */
     public static byte[] encrypt(byte[] data, String publicKey) {
         byte[] arrayOfByte2 = null;
-        ECPublicKeyParameters localECPublicKeyParameters = null;
+        ECPublicKeyParameters localEcPublicKeyParameters = null;
         try {
-            BCECPublicKey localECPublicKey = (BCECPublicKey)createPublicKey(publicKey);
-            ECParameterSpec localECParameterSpec = localECPublicKey.getParameters();
-            ECDomainParameters localECDomainParameters = new ECDomainParameters(localECParameterSpec.getCurve(),
-                localECParameterSpec.getG(), localECParameterSpec.getN());
-            localECPublicKeyParameters = new ECPublicKeyParameters(localECPublicKey.getQ(), localECDomainParameters);
-            SM2Engine localSM2Engine = new SM2Engine();
-            localSM2Engine.init(true, new ParametersWithRandom(localECPublicKeyParameters, SECURE_RANDOM));
-            arrayOfByte2 = localSM2Engine.processBlock(data, 0, data.length);
+            BCECPublicKey localEcPublicKey = (BCECPublicKey)createPublicKey(publicKey);
+            ECParameterSpec localEcParameterSpec = localEcPublicKey.getParameters();
+            ECDomainParameters localEcDomainParameters = new ECDomainParameters(localEcParameterSpec.getCurve(),
+                localEcParameterSpec.getG(), localEcParameterSpec.getN());
+            localEcPublicKeyParameters = new ECPublicKeyParameters(localEcPublicKey.getQ(), localEcDomainParameters);
+            SM2Engine localSm2Engine = new SM2Engine();
+            localSm2Engine.init(true, new ParametersWithRandom(localEcPublicKeyParameters, SECURE_RANDOM));
+            arrayOfByte2 = localSm2Engine.processBlock(data, 0, data.length);
         } catch (InvalidCipherTextException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             log.error("func[Sm2Util.encrypt] Exception [{} - {}] stackTrace[{}] ", e.getCause(), e.getMessage(),
                 e.getStackTrace());
@@ -121,14 +121,14 @@ public class Sm2Util {
         byte[] arrayOfByte3 = null;
         try {
             BCECPrivateKey sm2PriK = (BCECPrivateKey)createPrivateKey(privateKey);
-            ECParameterSpec localECParameterSpec = sm2PriK.getParameters();
-            ECDomainParameters localECDomainParameters = new ECDomainParameters(localECParameterSpec.getCurve(),
-                localECParameterSpec.getG(), localECParameterSpec.getN());
-            ECPrivateKeyParameters localECPrivateKeyParameters =
-                new ECPrivateKeyParameters(sm2PriK.getD(), localECDomainParameters);
-            SM2Engine localSM2Engine = new SM2Engine();
-            localSM2Engine.init(false, localECPrivateKeyParameters);
-            arrayOfByte3 = localSM2Engine.processBlock(encodeData, 0, encodeData.length);
+            ECParameterSpec localEcParameterSpec = sm2PriK.getParameters();
+            ECDomainParameters localEcDomainParameters = new ECDomainParameters(localEcParameterSpec.getCurve(),
+                localEcParameterSpec.getG(), localEcParameterSpec.getN());
+            ECPrivateKeyParameters localEcPrivateKeyParameters =
+                new ECPrivateKeyParameters(sm2PriK.getD(), localEcDomainParameters);
+            SM2Engine localSm2Engine = new SM2Engine();
+            localSm2Engine.init(false, localEcPrivateKeyParameters);
+            arrayOfByte3 = localSm2Engine.processBlock(encodeData, 0, encodeData.length);
         } catch (InvalidCipherTextException | NoSuchAlgorithmException | InvalidKeySpecException e) {
             log.error("func[Sm2Util.decrypt] Exception [{} - {}] stackTrace[{}] ", e.getCause(), e.getMessage(),
                 e.getStackTrace());
@@ -196,7 +196,7 @@ public class Sm2Util {
      * @date 2023-10-11 05:20:15
      */
     public static Map<String, Object> generateSmKey() {
-        Map<String, Object> keyMap = new HashMap<>();
+        Map<String, Object> keyMap = new HashMap<>(2);
         try {
             keyPairGenerator.initialize(sm2Spec, SECURE_RANDOM);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
@@ -258,7 +258,7 @@ public class Sm2Util {
      */
     public static String getPrivateKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PRIVATE_KEY);
-        return encryptBASE64(key.getEncoded());
+        return encryptBase64(key.getEncoded());
     }
 
     /**
@@ -272,19 +272,19 @@ public class Sm2Util {
      */
     public static String getPublicKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PUBLIC_KEY);
-        return encryptBASE64(key.getEncoded());
+        return encryptBase64(key.getEncoded());
     }
 
     /**
      * 
-     * @MethodName: encryptBASE64
+     * @MethodName: encryptBase64
      * @Description: base64加密
      * @author yuanzhenhui
      * @param key
      * @return String
      * @date 2023-10-11 05:21:04
      */
-    private static String encryptBASE64(byte[] key) {
+    private static String encryptBase64(byte[] key) {
         return new String(Base64.getEncoder().encode(key));
     }
 }

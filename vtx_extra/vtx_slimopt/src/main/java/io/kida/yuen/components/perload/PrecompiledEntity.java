@@ -44,7 +44,7 @@ public class PrecompiledEntity extends AbstractVerticle {
         clazzSet.parallelStream().forEach(clazz -> {
             Long start = System.currentTimeMillis();
             // 获得类集合
-            Map<String, Object> classMap = new HashMap<>();
+            Map<String, Object> classMap = new HashMap<>(4);
             // 获取实体对应的数据源名称
             classMap.put(EntityConstants.DB_LOADER,
                 clazz.isAnnotationPresent(DBLoader.class) ? clazz.getDeclaredAnnotation(DBLoader.class).key() : null);
@@ -63,7 +63,7 @@ public class PrecompiledEntity extends AbstractVerticle {
             List<Map<String, Object>> entityList = new ArrayList<>();
             for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(Column.class)) {
-                    Map<String, Object> fieldMap = new HashMap<>();
+                    Map<String, Object> fieldMap = new HashMap<>(4);
                     // 保存字段名称
                     fieldMap.put(EntityConstants.ENTITY_FIELD, field.getName());
                     // 保存sql字段名称

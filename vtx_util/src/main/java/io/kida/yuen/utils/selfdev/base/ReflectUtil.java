@@ -2,6 +2,7 @@ package io.kida.yuen.utils.selfdev.base;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,7 +52,7 @@ public class ReflectUtil {
     private static final String SETTER = "set";
     private static final String UTF_8 = "UTF-8";
 
-    private static final Class<?>[] baseClazzArr = {String.class, int.class, Long.class, Double.class, double.class,
+    private static final Class<?>[] BASE_CLAZZ_ARR = {String.class, int.class, Long.class, Double.class, double.class,
         Date.class, Integer.class, boolean.class, Boolean.class, Object.class};
 
     /**
@@ -456,7 +457,8 @@ public class ReflectUtil {
         Class<T> targetClazz) {
         T targetObject = null;
         try {
-            targetObject = targetClazz.newInstance();
+            Constructor<T> costurctors = targetClazz.getDeclaredConstructor();
+            targetObject = costurctors.newInstance();
             // 首先判断源实体是否为空
             if (null != sourceObject) {
                 // 获取源实体类
@@ -616,12 +618,18 @@ public class ReflectUtil {
      * @throws IllegalAccessException
      * @throws InstantiationException
      *             T
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
      * @date 2023-04-17 04:04:13
      */
     public static <T> T map2Bean(Map<String, Object> map, Class<T> targetClazz)
-        throws IllegalAccessException, InstantiationException {
+        throws IllegalAccessException, InstantiationException, NoSuchMethodException, SecurityException,
+        IllegalArgumentException, InvocationTargetException {
         MethodAccess clazzMa = MethodAccess.get(targetClazz);
-        T t = targetClazz.newInstance();
+        Constructor<T> costurctors = targetClazz.getDeclaredConstructor();
+        T t = costurctors.newInstance();
         map.entrySet().stream().forEach(entry -> setValueByAsm(clazzMa, t, entry.getKey(), entry.getValue()));
         return t;
     }
@@ -665,6 +673,7 @@ public class ReflectUtil {
      *             Object
      * @date 2023-04-17 04:08:39
      */
+    @SuppressWarnings("unused")
     public static Object invokePrivateMethod(Object object, String methodName, Object... params)
         throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Class<?>[] types = new Class[params.length];
@@ -680,11 +689,14 @@ public class ReflectUtil {
         if (method == null) {
             throw new NoSuchMethodException("No Such Method:" + clazz.getSimpleName() + methodName);
         }
-
-        boolean accessible = method.isAccessible();
-        method.setAccessible(true);
-        Object result = method.invoke(object, params);
-        method.setAccessible(accessible);
+        Object result = null;
+        if (method.canAccess(object)) {
+            result = method.invoke(object, params);
+        } else {
+            method.setAccessible(true);
+            result = method.invoke(object, params);
+            method.setAccessible(false);
+        }
         return result;
     }
 
@@ -805,12 +817,18 @@ public class ReflectUtil {
      * @throws IllegalAccessException
      * @throws InstantiationException
      *             T
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
      * @date 2023-04-17 04:10:51
      */
     public static <T> T transSqlField2EntityField(Map<String, Object> map, Class<T> clazz)
-        throws IllegalAccessException, InstantiationException {
+        throws IllegalAccessException, InstantiationException, NoSuchMethodException, SecurityException,
+        IllegalArgumentException, InvocationTargetException {
         MethodAccess clazzMa = MethodAccess.get(clazz);
-        T t = clazz.newInstance();
+        Constructor<T> costurctors = clazz.getDeclaredConstructor();
+        T t = costurctors.newInstance();
         map.entrySet().stream().filter(entry -> null != entry.getValue()).forEach(
             entry -> setValueByAsm(clazzMa, t, StringUtil.underline2Camel(entry.getKey(), true), entry.getValue()));
         return t;
@@ -839,7 +857,7 @@ public class ReflectUtil {
                     String v = (null != valueS && valueS.length > i) ? valueS[i] : null;
                     if (StringUtil.isNotBlank(str1)) {
                         try {
-                            for (Class<?> clazz : Arrays.asList(baseClazzArr)) {
+                            for (Class<?> clazz : Arrays.asList(BASE_CLAZZ_ARR)) {
                                 if (clazz.getSimpleName().equals(str1)) {
                                     c[i] = clazz;
                                     list.add(clazz);
@@ -858,7 +876,8 @@ public class ReflectUtil {
                                     c[i] = clazzObj;
                                     list.add(clazzObj);
                                     if (null != v) {
-                                        valueList.add(clazzObj.newInstance());
+                                        Constructor<?> costurctors = clazzObj.getDeclaredConstructor();
+                                        valueList.add(costurctors.newInstance());
                                     }
                                 }
                             }

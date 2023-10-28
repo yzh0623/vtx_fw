@@ -83,7 +83,7 @@ public class RsaUtil {
     public static byte[] decryptByPrivateKey(byte[] data, String key) {
         byte[] reDecryptByte = null;
         try {
-            byte[] keyBytes = decryptBASE64(key);
+            byte[] keyBytes = decryptBase64(key);
             PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
             Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
@@ -108,7 +108,7 @@ public class RsaUtil {
     public static byte[] encryptByPublicKey(byte[] data, String key) {
         byte[] reEcryptByte = null;
         try {
-            byte[] keyBytes = decryptBASE64(key);
+            byte[] keyBytes = decryptBase64(key);
             X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
             Key publicKey = keyFactory.generatePublic(x509KeySpec);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -133,7 +133,7 @@ public class RsaUtil {
     public static byte[] decryptByPublicKey(byte[] data, String key) {
         byte[] reDecryptByte = null;
         try {
-            byte[] keyBytes = decryptBASE64(key);
+            byte[] keyBytes = decryptBase64(key);
             X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
             Key publicKey = keyFactory.generatePublic(x509KeySpec);
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
@@ -158,7 +158,7 @@ public class RsaUtil {
     public static byte[] encryptByPrivateKey(byte[] data, String key) {
         byte[] reEcryptByte = null;
         try {
-            byte[] keyBytes = decryptBASE64(key);
+            byte[] keyBytes = decryptBase64(key);
             PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
             Key privateKey = keyFactory.generatePrivate(pkcs8KeySpec);
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
@@ -183,12 +183,12 @@ public class RsaUtil {
     public static String sign(byte[] data, String privateKey) {
         String reSignStr = null;
         try {
-            byte[] keyBytes = decryptBASE64(privateKey);
+            byte[] keyBytes = decryptBase64(privateKey);
             PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
             PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);
             signature.initSign(priKey);
             signature.update(data);
-            reSignStr = encryptBASE64(signature.sign());
+            reSignStr = encryptBase64(signature.sign());
         } catch (InvalidKeySpecException | InvalidKeyException | SignatureException e) {
             log.error("func[RsaUtil.sign] Exception [{} - {}] stackTrace[{}] ", e.getCause(), e.getMessage(),
                 e.getStackTrace());
@@ -210,12 +210,12 @@ public class RsaUtil {
     public static boolean verify(byte[] data, String publicKey, String sign) {
         boolean flag = false;
         try {
-            byte[] keyBytes = decryptBASE64(publicKey);
+            byte[] keyBytes = decryptBase64(publicKey);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             PublicKey pubKey = keyFactory.generatePublic(keySpec);
             signature.initVerify(pubKey);
             signature.update(data);
-            flag = signature.verify(decryptBASE64(sign));
+            flag = signature.verify(decryptBase64(sign));
         } catch (InvalidKeySpecException | InvalidKeyException | SignatureException e) {
             log.error("func[RsaUtil.verify] Exception [{} - {}] stackTrace[{}] ", e.getCause(), e.getMessage(),
                 e.getStackTrace());
@@ -234,7 +234,7 @@ public class RsaUtil {
      */
     public static String getPrivateKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PRIVATE_KEY);
-        return encryptBASE64(key.getEncoded());
+        return encryptBase64(key.getEncoded());
     }
 
     /**
@@ -248,7 +248,7 @@ public class RsaUtil {
      */
     public static String getPublicKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PUBLIC_KEY);
-        return encryptBASE64(key.getEncoded());
+        return encryptBase64(key.getEncoded());
     }
 
     /**
@@ -269,28 +269,28 @@ public class RsaUtil {
 
     /**
      * 
-     * @MethodName: decryptBASE64
+     * @MethodName: decryptBase64
      * @Description: base64解密
      * @author yuanzhenhui
      * @param key
      * @return byte[]
      * @date 2023-10-11 05:15:56
      */
-    private static byte[] decryptBASE64(String key) {
+    private static byte[] decryptBase64(String key) {
         Base64.Decoder decoder = Base64.getMimeDecoder();
         return decoder.decode(key);
     }
 
     /**
      * 
-     * @MethodName: encryptBASE64
+     * @MethodName: encryptBase64
      * @Description: base64加密
      * @author yuanzhenhui
      * @param key
      * @return String
      * @date 2023-10-11 05:16:03
      */
-    private static String encryptBASE64(byte[] key) {
+    private static String encryptBase64(byte[] key) {
         Base64.Encoder encoder = Base64.getMimeEncoder();
         return encoder.encodeToString(key);
     }

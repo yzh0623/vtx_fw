@@ -1,5 +1,7 @@
 package io.kida.yuen.utils.selfdev.base;
 
+import static java.util.Calendar.MONTH;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -39,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DateUtil {
 
     /** DateFormat缓存 */
-    private static final Map<String, DateFormat> dateFormatMap = new HashMap<>();
+    private static final Map<String, DateFormat> DATE_FORMAT_MAP = new HashMap<>();
 
     public static final String yyyy_MM_dd_EN = "yyyy-MM-dd";
     public static final String yyyy_MM_dd_decline = "yyyy/MM/dd";
@@ -66,10 +68,10 @@ public class DateUtil {
      * @date 2023-10-11 04:13:42
      */
     public static DateFormat getDateFormat(String formatStr) {
-        DateFormat df = dateFormatMap.get(formatStr);
+        DateFormat df = DATE_FORMAT_MAP.get(formatStr);
         if (df == null) {
             df = new SimpleDateFormat(formatStr);
-            dateFormatMap.put(formatStr, df);
+            DATE_FORMAT_MAP.put(formatStr, df);
         }
         return df;
     }
@@ -332,7 +334,7 @@ public class DateUtil {
      * @return String
      * @date 2023-10-11 04:23:58
      */
-    public static String getCurCNDate() {
+    public static String getCurCnDate() {
         return dateToDateString(new Date(), yyyy_MM_dd_CN);
     }
 
@@ -356,7 +358,7 @@ public class DateUtil {
      * @return String
      * @date 2023-10-11 04:24:14
      */
-    public static String getCurZhCNDateTime() {
+    public static String getCurZhCnDateTime() {
         return dateToDateString(new Date(), yyyy_MM_dd_HH_mm_ss_CN);
     }
 
@@ -602,7 +604,7 @@ public class DateUtil {
 
     /**
      * 
-     * @MethodName: getAfterNDays
+     * @MethodName: getAfterDays
      * @Description: 获取指定时间之后N天的日期
      * @author yuanzhenhui
      * @param date
@@ -611,7 +613,7 @@ public class DateUtil {
      * @return String
      * @date 2023-10-11 04:32:22
      */
-    public static String getAfterNDays(Date date, int n, String formateStr) {
+    public static String getAfterDays(Date date, int n, String formateStr) {
         SimpleDateFormat sdf = new SimpleDateFormat(formateStr);
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
@@ -847,11 +849,11 @@ public class DateUtil {
      */
     public static String getMondayOfThisWeek() {
         Calendar c = Calendar.getInstance();
-        int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
-        if (day_of_week == 0) {
-            day_of_week = 7;
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+        if (dayOfWeek == 0) {
+            dayOfWeek = 7;
         }
-        c.add(Calendar.DATE, -day_of_week + 1);
+        c.add(Calendar.DATE, -dayOfWeek + 1);
         return dateToDateString(c.getTime(), yyyy_MM_dd_EN);
     }
 
@@ -865,11 +867,11 @@ public class DateUtil {
      */
     public static String getSundayOfThisWeek() {
         Calendar c = Calendar.getInstance();
-        int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
-        if (day_of_week == 0) {
-            day_of_week = 7;
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+        if (dayOfWeek == 0) {
+            dayOfWeek = 7;
         }
-        c.add(Calendar.DATE, -day_of_week + 7);
+        c.add(Calendar.DATE, -dayOfWeek + 7);
         return dateToDateString(c.getTime());
     }
 
@@ -884,11 +886,11 @@ public class DateUtil {
      */
     public static String getDayOfThisWeek(int num) {
         Calendar c = Calendar.getInstance();
-        int day_of_week = c.get(Calendar.DAY_OF_WEEK) - 1;
-        if (day_of_week == 0) {
-            day_of_week = 7;
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+        if (dayOfWeek == 0) {
+            dayOfWeek = 7;
         }
-        c.add(Calendar.DATE, -day_of_week + num);
+        c.add(Calendar.DATE, -dayOfWeek + num);
         return dateToDateString(c.getTime(), yyyy_MM_dd_EN);
     }
 
@@ -1677,7 +1679,7 @@ public class DateUtil {
         int month = c2.get(Calendar.MONTH) + year * 12 - c1.get(Calendar.MONTH);
         for (int i = 0; i <= month; i++) {
             c1.setTime(sdf.parse(startDate));
-            c1.add(c1.MONTH, i);
+            c1.add(MONTH, i);
             list.add(sdf.format(c1.getTime()));
         }
         return list;
@@ -1853,8 +1855,8 @@ public class DateUtil {
             if (date != null) {
                 GregorianCalendar ca = new GregorianCalendar();
                 ca.setTimeInMillis(date.getTime());
-                XMLGregorianCalendar tXMLGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(ca);
-                reVal = tXMLGregorianCalendar.normalize().toString();
+                XMLGregorianCalendar tXmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(ca);
+                reVal = tXmlGregorianCalendar.normalize().toString();
             }
         } catch (DatatypeConfigurationException e) {
             log.error("func[DateUtil.date2GregorianCalendarString] Exception [{} - {}] stackTrace[{}] ", e.getCause(),
@@ -2193,11 +2195,11 @@ public class DateUtil {
      * @return String
      * @date 2023-10-11 04:51:53
      */
-    public static String getDateString(Date _date, String patternString) {
+    public static String getDateString(Date dateParam, String patternString) {
         String dateString = "";
-        if (_date != null) {
+        if (dateParam != null) {
             SimpleDateFormat formatter = new SimpleDateFormat(patternString);
-            dateString = formatter.format(_date);
+            dateString = formatter.format(dateParam);
         }
         return dateString;
     }
@@ -2212,12 +2214,12 @@ public class DateUtil {
      * @return Date
      * @date 2023-10-11 04:51:44
      */
-    public static Date dateToDate(Date _date, String patten) {
+    public static Date dateToDate(Date dateParam, String patten) {
         Date date = null;
         SimpleDateFormat formatter = new SimpleDateFormat(patten);
         try {
-            if (_date != null) {
-                String dateStr = formatter.format(_date);
+            if (dateParam != null) {
+                String dateStr = formatter.format(dateParam);
                 date = formatter.parse(dateStr);
             }
         } catch (ParseException e) {
@@ -2270,7 +2272,7 @@ public class DateUtil {
      * @return java.sql.Date
      * @date 2023-10-11 04:51:19
      */
-    public static java.sql.Date utilDateToSQLDate(Date date) {
+    public static java.sql.Date utilDateToSqlDate(Date date) {
         return new java.sql.Date(date.getTime());
     }
 
@@ -2712,10 +2714,10 @@ public class DateUtil {
      * @return Timestamp
      * @date 2023-10-11 04:37:31
      */
-    public static Timestamp getTimestamp(String str, String _dtFormat) {
+    public static Timestamp getTimestamp(String str, String dtFormat) {
         Timestamp ret = null;
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(_dtFormat);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(dtFormat);
             Date date = dateFormat.parse(str);
             long datelong = date.getTime();
             ret = new Timestamp(datelong);
@@ -2755,7 +2757,7 @@ public class DateUtil {
      * @return XMLGregorianCalendar
      * @date 2023-10-11 04:37:11
      */
-    public XMLGregorianCalendar convertToXMLGregorianCalendar(Date date) {
+    public XMLGregorianCalendar convertToXmlGregorianCalendar(Date date) {
         XMLGregorianCalendar gc = null;
         try {
             GregorianCalendar cal = new GregorianCalendar();

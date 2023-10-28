@@ -92,7 +92,7 @@ public class DataSourceConfig extends AbstractVerticle {
      * @return HikariConfig
      * @date 2023-10-19 11:01:57
      */
-    public HikariConfig getHikariCPConfig() {
+    public HikariConfig getHikariCpConfig() {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setAutoCommit(isAutoCommit);
         hikariConfig.setAllowPoolSuspension(allowPoolSuspension);
@@ -124,7 +124,7 @@ public class DataSourceConfig extends AbstractVerticle {
         // 判断是否需要使用数据库
         if (Boolean.TRUE.equals(hasOpen)) {
             // 获取数据源参数
-            HikariConfig hc = getHikariCPConfig();
+            HikariConfig hc = getHikariCpConfig();
             // 遍历并创建多数据源
             if (!nodes.isEmpty()) {
                 nodes.stream().forEach(lhMap -> {
