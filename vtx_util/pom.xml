@@ -12,7 +12,7 @@
 	<description>vtx_fw工具包</description>
 
 	<properties>
-		<bcprov.version>1.71</bcprov.version>
+		<bcprov.version>[1.74,)</bcprov.version>
 	</properties>
 
 	<dependencies>

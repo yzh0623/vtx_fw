@@ -15,6 +15,8 @@ import io.vertx.core.eventbus.EventBusOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.spi.cluster.ClusterManager;
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager;
+import io.vertx.tracing.zipkin.HttpSenderOptions;
+import io.vertx.tracing.zipkin.ZipkinTracingOptions;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -53,6 +55,12 @@ public class BootstrapConfig {
     private static final String ZK_INITIAL_SLEEP_TIME_PARAM = "initialSleepTime";
     private static final String ZK_MAX_TIMES_PARAM = "maxTimes";
 
+    // zipkin配置信息
+    private static final String ZIP_HAS_OPEN = "zipkin.has-open";
+    private static final String ZIP_SERVICE_NAME = "zipkin.service-name";
+    private static final String ZIP_HOST = "zipkin.host";
+    private static final String ZIP_PORT = "zipkin.port";
+
     // vtx Verticle常量
     private static final String VTX_VERTICLE = "Verticle";
 
@@ -67,12 +75,17 @@ public class BootstrapConfig {
         log.debug("In order to get the startup configuration first initialize the YamlConfig class...");
         Vertx.vertx().deployVerticle(new YamlConfig(), handler -> {
             VertxOptions options = setupOptions();
+            // 通过参数判断是否开启链路追踪功能
+            boolean zipkinFlag = YamlUtil.getBooleanValue(ZIP_HAS_OPEN);
+            if (zipkinFlag) {
+                options.setTracingOptions(setupZipkinTracingOptions());
+            }
+
             if (Boolean.TRUE.equals(YamlUtil.getBooleanValue(ZK_HAS_OPEN))) {
                 try {
                     options.setClusterManager(setupCluster());
                     options.setEventBusOptions(setupEbOptions(InetAddress.getLocalHost().getHostAddress()));
-
-                    Vertx.clusteredVertx(options, clusterHandler -> {
+                    Vertx.clusteredVertx(options).onComplete(clusterHandler -> {
                         if (clusterHandler.succeeded()) {
                             setupDeploy(clusterHandler.result());
                         } else {
@@ -141,6 +154,26 @@ public class BootstrapConfig {
         ebOpt.setHost(ipv4);
         ebOpt.setClusterPublicHost(ipv4);
         return ebOpt;
+    }
+
+    /**
+     * 
+     * @MethodName: setupZipkinTracingOptions
+     * @Description: 设置 zipkin 链路追踪配置
+     * @author yuanzhenhui
+     * @return ZipkinTracingOptions
+     * @date 2023-11-13 10:12:26
+     */
+    private static ZipkinTracingOptions setupZipkinTracingOptions() {
+        ZipkinTracingOptions zptOpt = new ZipkinTracingOptions();
+        zptOpt.setServiceName(YamlUtil.getStringValue(ZIP_SERVICE_NAME));
+
+        HttpSenderOptions hsOpt = new HttpSenderOptions();
+        hsOpt.setLogActivity(true);
+        hsOpt.setDefaultHost(YamlUtil.getStringValue(ZIP_HOST));
+        hsOpt.setDefaultPort(YamlUtil.getIntegerValue(ZIP_PORT));
+        zptOpt.setSenderOptions(hsOpt);
+        return zptOpt;
     }
 
     /**

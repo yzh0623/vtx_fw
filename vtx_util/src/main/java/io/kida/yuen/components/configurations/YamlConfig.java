@@ -66,13 +66,16 @@ public class YamlConfig extends AbstractVerticle {
                             // 获取到所有目录下的文件路径集合
                             List<String> fileList = dirHeader.result();
                             if (null != fileList && !fileList.isEmpty()) {
-                                fileList.stream().map(pathName -> vertx.fileSystem().readFileBlocking(pathName))
-                                    .filter(Objects::nonNull).forEach(pluginBfr -> {
+                                for (String pathName : fileList) {
+                                    Buffer pluginBfr = vertx.fileSystem().readFileBlocking(pathName);
+                                    if (Objects.nonNull(pluginBfr)) {
                                         Map<?, ?> pluginMap = (Map<?, ?>)new Yaml().load(pluginBfr.toString());
                                         Map<String, Object> appMap = pluginMap.entrySet().stream().collect(
                                             Collectors.toMap(entry -> String.valueOf(entry.getKey()), Entry::getValue));
                                         GlobalConstants.YAML_MAP.putAll(appMap);
-                                    });
+                                    }
+                                }
+                                GlobalConstants.CONFIG_LOAD_COMPLETE = true;
                             }
                         }
                     });

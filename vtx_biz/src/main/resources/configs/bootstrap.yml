@@ -22,3 +22,8 @@ thread: # 线程配置
    worker: 128 # 程序工作线程数
    init-pool-size: 64 # 阻塞线程数量，默认20
    eventloop-pool-size: 256 # Event Loop线程的数量
+zipkin:
+   has-open: false # 是否开启链路追踪
+   service-name: vtx-zipkin
+   host: 127.0.0.1
+   port: 9411

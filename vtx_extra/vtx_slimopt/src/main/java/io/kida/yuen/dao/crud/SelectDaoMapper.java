@@ -1,7 +1,5 @@
 package io.kida.yuen.dao.crud;
 
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +54,6 @@ public class SelectDaoMapper extends AbstractVerticle implements DaoSetUp {
      */
     @DBLoader
     public <T> void selectByPk(Message<T> msg) {
-        try {
-            log.info("mapper ip is : " + Inet4Address.getLocalHost());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
         setupBeforeOperate(msg, (DataSourceExecParam dsrcExec) -> {
             Class<?> clazz = dsrcExec.getTargetClass();
             List<Map<String, Object>> entityList = EntityConstants.ENTITY_INFO_MAP.get(clazz);

@@ -1,7 +1,7 @@
 zookeeper: # zookeeper配置
    zookeeper-hosts: 172.20.0.20:2181,172.20.0.21:2181,172.20.0.22:2181 # 节点地址(docker)
-#   zookeeper-hosts: 127.0.0.1:2182,127.0.0.1:2183,127.0.0.1:2184 # 节点地址(docker)   
+#   zookeeper-hosts: 127.0.0.1:2281,127.0.0.1:2381,127.0.0.1:2481 # 节点地址(docker)   
    retry: 
       initial-sleep-time: 100  # 初始化休眠时间
       max-times: 2 # 重试次数
-   has-open: true # 是否开启集群
+   has-open: false # 是否开启集群

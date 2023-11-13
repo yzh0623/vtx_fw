@@ -30,7 +30,7 @@ public class YamlUtil {
     static {
         // 等待configJson静态变量加载完成
         while (true) {
-            if (null != GlobalConstants.YAML_MAP && !GlobalConstants.YAML_MAP.isEmpty()) {
+            if (GlobalConstants.CONFIG_LOAD_COMPLETE) {
                 JSON_OBJECT = new JsonObject(GlobalConstants.YAML_MAP);
                 break;
             } else {

@@ -9,17 +9,17 @@
 	</parent>
 	<artifactId>vtx_biz</artifactId>
 	<name>vtx_biz</name>
-	<description>vtx_fw业务模块</description>
+	<description>vtx_fw 整合模块</description>
 
 	<properties>
 		<main.class>io.kida.yuen.AppBoot</main.class>
-		<!-- junit-jupiter -->
+		<!-- junit 版本 -->
 		<junit-jupiter.version>5.10.0</junit-jupiter.version>
 
-		<!-- docker参数 -->
+		<!-- docker maven 版本 -->
 		<docker-maven.version>0.43.4</docker-maven.version>
 
-		<!-- docker仓库 -->
+		<!-- docker 仓库配置 -->
 		<docker-host.name>tcp://127.0.0.1:2375</docker-host.name>
 		<docker.username>admin</docker.username>
 		<docker.password>123456</docker.password>
@@ -28,14 +28,7 @@
 	</properties>
 
 	<dependencies>
-
-		<!-- vert.x -->
-		<dependency>
-			<groupId>io.vertx</groupId>
-			<artifactId>vertx-zookeeper</artifactId>
-		</dependency>
-
-		<!-- junit5 -->
+		<!-- junit5 单元测试 -->
 		<dependency>
 			<groupId>io.vertx</groupId>
 			<artifactId>vertx-junit5</artifactId>
@@ -54,7 +47,19 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- vtx components -->
+		<!-- vert.x 分布式集群（选用 对应 application-zookeeper.yml 配置） -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-zookeeper</artifactId>
+		</dependency>
+
+		<!--vert.x 链路追踪（选用 对应 bootstrap.yml 中 zipkin 配置） -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-zipkin</artifactId>
+		</dependency>
+
+		<!-- vtx_fw 自研组件 -->
 		<dependency>
 			<groupId>io.yzh</groupId>
 			<artifactId>vtx_slimopt</artifactId>
@@ -69,7 +74,7 @@
 
 	<build>
 		<plugins>
-			<!-- maven shade plugin -->
+			<!-- maven shade 插件打包 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -81,7 +86,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<!-- filter file -->
+							<!-- 文件类型过滤 -->
 							<filters>
 								<filter>
 									<artifact>*:*</artifact>
@@ -93,14 +98,12 @@
 								</filter>
 							</filters>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
 										<Main-Class>${main.class}</Main-Class>
 									</manifestEntries>
 								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 									<resource>
 										META-INF/services/io.vertx.core.spi.VerticleFactory </resource>
 								</transformer>
@@ -114,7 +117,10 @@
 			<!-- 1. 本地机器请先访问本机私库下载好“ibm-semeru-runtimes:open-17.0.8_7-jre”镜像 -->
 			<!-- 2. 注意properties标签中docker相关变量的修改）-->
 			<!-- 3. push到私库时请先确认私库服务器上是否已经开启2375端口，若没有开启请先执行以下镜像确保2375端口开启： -->
-			<!-- docker run -it -d -name=socat -p 2375:2375 -v /var/run/docker.sock:/var/run/docker.sock -restart=always bobrik/socat:latest TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock -->
+			<!-- docker run -it -d -name=socat -p 2375:2375 -v
+			/var/run/docker.sock:/var/run/docker.sock -restart=always
+			bobrik/socat:latest TCP4-LISTEN:2375,fork,reuseaddr
+			UNIX-CONNECT:/var/run/docker.sock -->
 			<!-- 这里会用到一个名叫bobrik/socat的镜像这个镜像就是用于对付这种情况的 -->
 			<!-- 4. jar包采用集群模式 -->
 			<!-- 5. 镜像打包后会自动替换掉之前同名的镜像，因此不必考虑多个镜像同时存在的问题 -->
@@ -146,20 +152,58 @@
 								<entryPoint>
 									<exec>
 										<arg>java</arg>
+										<arg>-server</arg> <!-- 服务器模式 -->
 										<arg>-jar</arg>
 										<arg>${project.artifactId}-${project.version}.jar</arg>
-										<arg>-XX:MaxGCPauseMillis=200</arg>
-										<arg>-Xloggc:/tmp/${project.artifactId}/gc.log</arg>
-										<arg>-XX:+PrintGCDetails</arg>
-										<arg>-XX:+PrintGCDateStamps</arg>
-										<arg>-XX:+UnlockExperimentalVMOptions</arg>
-										<arg>-XX:+UseG1GC</arg>
-										<arg>-Djava.security.egd=file:/dev/./urandom</arg>
-										<arg>-XX:+UseCGroupMemoryLimitForHeap</arg>
-										<arg>-XX:MaxRAMFraction=1</arg>
-										<arg>-XX:+HeapDumpOnOutOfMemoryError</arg>
-										<arg>-XX:HeapDumpPath=/tmp/${project.artifactId}/dump/</arg>
-										<arg>-cluster</arg>
+
+										<!-- 内存溢出错误排查参数 -->
+										<arg>-XX:+HeapDumpOnOutOfMemoryError</arg> <!--
+										当发生 OutOfMemoryError 错误时，生成堆转储（Heap
+										Dump）文件 -->
+										<arg>-XX:HeapDumpPath=/tmp/${project.artifactId}/dump/</arg> <!--
+										设置堆转储文件的路径 -->
+
+										<!-- G1垃圾收集器相关参数 -->
+										<arg>-XX:InitiatingHeapOccupancyPercent=80</arg> <!--
+										触发垃圾回收的堆占用率百分比 -->
+										<arg>-XX:+UseG1GC</arg><!-- 指定使用 G1
+										(Garbage First) 垃圾回收器 -->
+										<arg>-XX:G1HeapRegionSize=8M</arg><!--
+										指定 G1 回收器的堆区域大小 -->
+										<arg>-XX:+G1SummarizeRSetStats</arg><!--
+										打印 G1 回收器的 RSet 统计信息 -->
+										<arg>-XX:+PrintReferenceGC</arg><!--
+										打印引用对象的垃圾回收信息 -->
+										<arg>-XX:MaxGCPauseMillis=200</arg><!--
+										设置垃圾回收的最大暂停时间（以毫秒为单位） -->
+										<arg>-XX:+PrintGCDetails</arg><!--
+										打印详细的垃圾回收信息 -->
+										<arg>-Xloggc:/tmp/${project.artifactId}/mes-gcc-%t.log</arg> <!--
+										将垃圾回收的日志输出到指定文件 -->
+										<arg>-XX:+DisableExplicitGC</arg><!--
+										禁用显式的垃圾回收调用 -->
+										<arg>-XX:+UnlockDiagnosticVMOptions</arg><!--
+										解锁诊断 VM 选项 -->
+										<arg>-XX:+PrintAdaptiveSizePolicy</arg><!--
+										打印自适应的堆大小策略信息 -->
+										<arg>-XX:MetaspaceSize=256M</arg><!--
+										指定元数据空间的初始大小 -->
+										<arg>-XX:MaxMetaspaceSize=256M</arg><!--
+										指定元数据空间的最大大小 -->
+
+										<!-- 内存优化相关 -->
+										<arg>-XX:+PrintStringDeduplicationStatistics</arg><!--
+										打印字符串去重统计信息，用于优化内存占用 -->
+										<arg>-XX:+UseCompressedOops</arg><!--
+										启用压缩指针以减少内存占用 -->
+										<arg>-XX:SurvivorRatio=4</arg><!--
+										指定年轻代中 Eden 区与 Survivor 区的比率 -->
+										<arg>-XX:NewRatio=4</arg><!--
+										指定年轻代与老年代的比率 -->
+
+										<!-- 线程定义 -->
+										<arg>-Xss64K</arg><!-- 指定线程栈大小 -->
+										<arg>-cluster</arg> <!-- 应用程序加入分布式集群 -->
 									</exec>
 								</entryPoint>
 								<assembly>
@@ -180,7 +224,8 @@
 							<goal>push</goal>
 						</goals>
 						<configuration>
-							<imageName>${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</imageName>
+							<imageName>
+								${target-ip.repo}/${docker.image.registry}/${project.artifactId}:${project.version}</imageName>
 						</configuration>
 					</execution>
 				</executions>
