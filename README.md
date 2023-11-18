@@ -18,3 +18,5 @@
 [1. 本地构建 Docker 镜像（细说如何直接通过 Maven 打包成 Docker 镜像并上传到私有镜像库以及验证过程）](https://www.yuque.com/kidayuan/pa6ygl/bggfcb6eu41xwa2c)
 
 [2. Yaml 文件读取机制（细说 Yaml 文件的获取过程）](https://www.yuque.com/kidayuan/pa6ygl/ecy32imuegehslfi)
+
+[3. 集群配置与使用（细说如何通过 Apache Zookeeper 来实现应用集群的搭建）](https://www.yuque.com/kidayuan/pa6ygl/mcaw6f1dfb5o1sso)
