@@ -20,3 +20,5 @@
 [2. Yaml 文件读取机制（细说 Yaml 文件的获取过程）](https://www.yuque.com/kidayuan/pa6ygl/ecy32imuegehslfi)
 
 [3. 集群配置与使用（细说如何通过 Apache Zookeeper 来实现应用集群的搭建）](https://www.yuque.com/kidayuan/pa6ygl/mcaw6f1dfb5o1sso)
+
+[4. 动态部署 Verticle 实现（细说关于如何通过反射注册 AbstractVerticle 实现类）](https://www.yuque.com/kidayuan/pa6ygl/pos6lk362tieo2h5)
