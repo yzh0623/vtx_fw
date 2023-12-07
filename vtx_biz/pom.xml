@@ -13,6 +13,8 @@
 
 	<properties>
 		<main.class>io.kida.yuen.AppBoot</main.class>
+		<native-macos.version>4.1.101.Final</native-macos.version>
+
 		<!-- junit 版本 -->
 		<junit-jupiter.version>5.10.0</junit-jupiter.version>
 
@@ -44,6 +46,12 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit-jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>io.netty</groupId>
+		    <artifactId>netty-resolver-dns-native-macos</artifactId>
+		    <classifier>osx-x86_64</classifier>
 			<scope>test</scope>
 		</dependency>
 

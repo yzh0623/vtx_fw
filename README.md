@@ -24,3 +24,5 @@
 [4. 动态部署 Verticle 实现（细说关于如何通过反射注册 AbstractVerticle 实现类）](https://www.yuque.com/kidayuan/pa6ygl/pos6lk362tieo2h5)
 
 [5. 自动注册访问路由（细说关于如何通过反射注册访问路由）](https://www.yuque.com/kidayuan/pa6ygl/utmnn9v39wfuul3q)
+
+[6. JUnit5 单元测试样例（细说关于如何进行单元测试验证）](https://www.yuque.com/kidayuan/pa6ygl/dv6dpnszsh2cxi71)
