@@ -124,7 +124,7 @@ public class DeleteRouter extends AbstractVerticle implements RouterSet {
         CopyOnWriteArraySet<Class<?>> clazzSet = ReflectUtil.getClasses(RouterConstants.SERVER_MODEL_LOADED, true);
         if (null != clazzSet && !clazzSet.isEmpty()) {
             String deleteUri = RouterConstants.BASE_URI + DaoConstants.DELETE_PARAM + HttpConstants.HTTP_SLASH;
-            clazzSet.parallelStream().forEach(clazz -> {
+            clazzSet.forEach(clazz -> {
                 String entityName = StringUtil.lowerFirstCase(clazz.getSimpleName());
                 String pkParamUri = entityName + HttpConstants.HTTP_SLASH + RouterConstants.BY_PK_PARAM;
                 String conditionParamUri = entityName + HttpConstants.HTTP_SLASH + RouterConstants.BY_CONDITION_PARAM;

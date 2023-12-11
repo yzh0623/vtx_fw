@@ -26,7 +26,6 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -40,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
  * @Author: yuanzhenhui
  * @Date: 2023/10/16
  */
-@Slf4j
 public class SelectRouter extends AbstractVerticle implements RouterSet {
 
     /**
@@ -211,7 +209,7 @@ public class SelectRouter extends AbstractVerticle implements RouterSet {
         CopyOnWriteArraySet<Class<?>> clazzSet = ReflectUtil.getClasses(RouterConstants.SERVER_MODEL_LOADED, true);
         if (null != clazzSet && !clazzSet.isEmpty()) {
             String queryUri = RouterConstants.BASE_URI + DaoConstants.QUERY_PARAM + HttpConstants.HTTP_SLASH;
-            clazzSet.parallelStream().forEach(clazz -> {
+            clazzSet.forEach(clazz -> {
                 String entityName = StringUtil.lowerFirstCase(clazz.getSimpleName());
                 String pkParamUri = entityName + HttpConstants.HTTP_SLASH + RouterConstants.BY_PK_PARAM
                     + HttpConstants.HTTP_SLASH + RouterConstants.COLON + PK;

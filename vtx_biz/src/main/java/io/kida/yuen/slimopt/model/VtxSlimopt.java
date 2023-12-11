@@ -1,4 +1,4 @@
-package io.kida.yuen.example.model;
+package io.kida.yuen.slimopt.model;
 
 import java.time.LocalDateTime;
 

@@ -86,7 +86,7 @@ public class DataSourceOperateUtil extends AbstractVerticle {
                                 add.setNumRows(rs.getNumRows());
                                 // 获取返回数据集，格式是jsonobject能够与columnName字段做映射 这里设定返回字段大小写不敏感，这样方便统一处理
                                 List<JsonObject> list = rs.getRows(true);
-                                list.stream().forEach(jsonObj -> {
+                                list.forEach(jsonObj -> {
                                     jsonObj.stream().filter(entry -> entry.getValue() instanceof LocalDateTime
                                         || entry.getValue() instanceof Date).forEach(entry -> {
                                             LocalDateTime ldt = LocalDateTime.parse(jsonObj.getString(entry.getKey()));

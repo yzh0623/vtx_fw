@@ -52,7 +52,6 @@
 		    <groupId>io.netty</groupId>
 		    <artifactId>netty-resolver-dns-native-macos</artifactId>
 		    <classifier>osx-x86_64</classifier>
-			<scope>test</scope>
 		</dependency>
 
 		<!-- vert.x 分布式集群（选用 对应 application-zookeeper.yml 配置） -->

@@ -93,7 +93,7 @@ public class InsertRouter extends AbstractVerticle implements RouterSet {
         CopyOnWriteArraySet<Class<?>> clazzSet = ReflectUtil.getClasses(RouterConstants.SERVER_MODEL_LOADED, true);
         if (null != clazzSet && !clazzSet.isEmpty()) {
             String insertUri = RouterConstants.BASE_URI + DaoConstants.INSERT_PARAM + HttpConstants.HTTP_SLASH;
-            clazzSet.parallelStream().forEach(clazz -> {
+            clazzSet.forEach(clazz -> {
                 String entityName = StringUtil.lowerFirstCase(clazz.getSimpleName());
                 // 新增
                 router.post(insertUri + entityName).handler(this::postInsert);

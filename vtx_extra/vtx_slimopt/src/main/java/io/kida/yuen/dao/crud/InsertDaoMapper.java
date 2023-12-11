@@ -63,7 +63,7 @@ public class InsertDaoMapper extends AbstractVerticle implements DaoSetUp {
                 .append(EntityConstants.CLASS_MAP.get(clazz.getSimpleName()).get(EntityConstants.TABLE_NAME));
             StringBuilder fieldBuffer = new StringBuilder(DaoConstants.LEFT_PARENTHESIS);
             StringBuilder valueBuffer = new StringBuilder(VALUES).append(DaoConstants.LEFT_PARENTHESIS);
-            entityList.stream().forEach(map -> {
+            entityList.forEach(map -> {
                 String fieldValue =
                     dsrcExec.getDataParam().getString(String.valueOf(map.get(EntityConstants.ENTITY_FIELD)));
                 if (StringUtil.isNotEmpty(fieldValue)) {

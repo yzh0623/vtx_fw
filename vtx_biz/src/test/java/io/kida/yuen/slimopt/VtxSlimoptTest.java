@@ -19,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import io.kida.yuen.components.constants.HttpConstants;
-import io.kida.yuen.example.model.VtxSlimopt;
+import io.kida.yuen.slimopt.model.VtxSlimopt;
 import io.kida.yuen.utils.selfdev.base.DateUtil;
 import io.kida.yuen.utils.selfdev.base.StringUtil;
 import io.kida.yuen.utils.selfdev.encrypt.uuid.UuidUtil;

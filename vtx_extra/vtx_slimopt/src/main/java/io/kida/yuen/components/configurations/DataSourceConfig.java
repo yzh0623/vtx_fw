@@ -2,6 +2,7 @@ package io.kida.yuen.components.configurations;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -127,21 +128,19 @@ public class DataSourceConfig extends AbstractVerticle {
             HikariConfig hc = getHikariCpConfig();
             // 遍历并创建多数据源
             if (!nodes.isEmpty()) {
-                nodes.stream().forEach(lhMap -> {
-                    // 对应驱动名称
-                    hc.setDriverClassName(String.valueOf(lhMap.get(DataSourceConstants.DRIVER_CLASS_NAME_PARAM)));
-                    // 对应用户名
-                    hc.setUsername(String.valueOf(lhMap.get(DataSourceConstants.USERNAME_PARAM)));
-                    // 对应密码
-                    hc.setPassword(String.valueOf(lhMap.get(DataSourceConstants.PASSWORD_PARAM)));
-                    // 对应连接字符串
-                    hc.setJdbcUrl(String.valueOf(lhMap.get(DataSourceConstants.URI_PARAM)));
-                    // 创建不共享的jdbc客户端（使用了hikariCP数据库连接池）
-                    JDBCClient client = JDBCClient.create(vertx, new HikariDataSource(hc));
-                    // 为了方便使用这里创建了别名获取
-                    DataSourceConstants.JDBC_CLIENT_MAP.put(String.valueOf(lhMap.get(DataSourceConstants.NAME_PARAM)),
-                        client);
-                });
+                nodes.stream().collect(
+                    Collectors.toMap(lhMap -> String.valueOf(lhMap.get(DataSourceConstants.NAME_PARAM)), lhMap -> {
+                        // 对应驱动名称
+                        hc.setDriverClassName(String.valueOf(lhMap.get(DataSourceConstants.DRIVER_CLASS_NAME_PARAM)));
+                        // 对应用户名
+                        hc.setUsername(String.valueOf(lhMap.get(DataSourceConstants.USERNAME_PARAM)));
+                        // 对应密码
+                        hc.setPassword(String.valueOf(lhMap.get(DataSourceConstants.PASSWORD_PARAM)));
+                        // 对应连接字符串
+                        hc.setJdbcUrl(String.valueOf(lhMap.get(DataSourceConstants.URI_PARAM)));
+                        // 创建不共享的jdbc客户端（使用了hikariCP数据库连接池）
+                        return JDBCClient.create(vertx, new HikariDataSource(hc));
+                    })).forEach(DataSourceConstants.JDBC_CLIENT_MAP::put);
             }
         }
     }

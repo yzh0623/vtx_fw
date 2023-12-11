@@ -60,7 +60,7 @@ public class SelectDaoMapper extends AbstractVerticle implements DaoSetUp {
             StringBuilder pkBuilder = DaoUtil.getAndPk(entityList, dsrcExec.getDataParam());
 
             StringBuilder headerBuilder = new StringBuilder("");
-            entityList.stream()
+            entityList
                 .forEach(map -> headerBuilder.append(DaoConstants.BACKQUOTE).append(map.get(EntityConstants.SQL_FIELD))
                     .append(DaoConstants.BACKQUOTE).append(" AS ").append(DaoConstants.BACKQUOTE)
                     .append(map.get(EntityConstants.ENTITY_FIELD)).append(DaoConstants.BACKQUOTE).append(","));
@@ -107,7 +107,7 @@ public class SelectDaoMapper extends AbstractVerticle implements DaoSetUp {
             StringBuilder conditionBuilder = DaoUtil.getAndCondition(entityList, dsrcExec.getDataParam());
 
             StringBuilder headerBuilder = new StringBuilder("");
-            entityList.stream()
+            entityList
                 .forEach(map -> headerBuilder.append(DaoConstants.BACKQUOTE).append(map.get(EntityConstants.SQL_FIELD))
                     .append(DaoConstants.BACKQUOTE).append(" AS ").append(DaoConstants.BACKQUOTE)
                     .append(map.get(EntityConstants.ENTITY_FIELD)).append(DaoConstants.BACKQUOTE).append(","));

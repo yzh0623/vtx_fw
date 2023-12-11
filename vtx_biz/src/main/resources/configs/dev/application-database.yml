@@ -7,15 +7,15 @@ databases:
          driver-class-name: com.mysql.cj.jdbc.Driver
          uri: jdbc:mysql://127.0.0.1:3506/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
 #         uri: jdbc:mysql://172.20.0.6:3306/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
-         username: <username>
-         password: <password>
+         username: yzh
+         password: '0623'
       -
          name: vtx_biz_read # 数据源名称
          driver-class-name: com.mysql.cj.jdbc.Driver # jdbc驱动类型
          uri: jdbc:mysql://127.0.0.1:3806/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
 #         uri: jdbc:mysql://172.20.0.7:3306/vtx_biz?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=utf-8
-         username: <username>
-         password: <password>
+         username: yzh
+         password: '0623'
 #       -
 #         name: vtx_biz_pgsql # 数据源名称（postgresql）
 #         driver-class-name: org.postgresql.Driver
@@ -40,4 +40,4 @@ databases:
       interval: 500 # 重试间隔时间（毫秒）
 slimopt:   
    scan:
-      path: io.kida.yuen.example.model
+      path: io.kida.yuen.slimopt.model
